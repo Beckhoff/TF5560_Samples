@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.4">
+  <Task Name="MC_Task_MET_" Id="{f33b9d3a-aaff-47e4-86ee-8b794ecc06e0}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>2000</CycleTime>
+    <Priority>3</Priority>
+    <PouCall>
+      <Name>Simu</Name>
+    </PouCall>
+    <TaskFBGuid>{cfb07876-6631-4d97-a362-bf3e4e042bf9}</TaskFBGuid>
+    <Fb_init>{fb2a1d78-f7f5-4495-82e6-aab85d1c995d}</Fb_init>
+    <Fb_exit>{a8da5fc8-a48e-4742-9c1c-f4ca2497aa7e}</Fb_exit>
+    <CycleUpdate>{e8e64057-8dfd-4559-8d23-b64b05913cda}</CycleUpdate>
+    <PostCycleUpdate>{84cea5a6-6ea6-4431-a117-6a52f1a85116}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

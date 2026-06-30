@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.19">
+  <POU Name="MAIN" Id="{5c2425d5-896a-4883-ab01-c28da3e028c6}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	bStart: 							BOOL;
+	bEnableValveCharacteristicCurve: 	BOOL;
+	bDisableValveCharacteristicCurve: 	BOOL;
+	bReadValveCharacteristicCurve:		BOOL;
+	numberOfValveCharacteristicCurvePoints:	UDINT:=21;
+
+	nErrorId:		UDINT;
+
+	HydAxis:			AXIS_REF;
+	fbPower:			MC_Power;
+	
+	fbValveObject:			MC_ValveCharacteristicCurve;
+	fbCharacterization:		MC_ValveCharacterization;
+	stValveCharactOptions:	ValveCharacterizationOptions;
+	
+	fbMoveAbsFwd:		MC_MoveAbsolute;
+	fbMoveAbsBwd:		MC_MoveAbsolute;
+	timer:				TON;	
+	
+	NoOfPoints:		UDINT;
+	i:				INT;
+	ValvePoint:		ARRAY[1..cnNumberOfValveCharacteristicCurvePoints] OF ValveCharacteristicPoint;
+	
+	bInit: 			BOOL;
+	nState: 		INT;
+	
+	x_value:		LREAL;
+	y_value:		LREAL;
+END_VAR
+VAR CONSTANT
+	cnNumberOfValveCharacteristicCurvePoints:		UDINT:=100;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[numberOfValveCharacteristicCurvePoints := MIN(cnNumberOfValveCharacteristicCurvePoints, numberOfValveCharacteristicCurvePoints);
+
+IF bStart THEN
+	fbPower.Enable:=TRUE;
+END_IF
+fbPower
+(
+	Axis:=HydAxis,
+	EnableNegative:=TRUE,
+	EnablePositive:=TRUE
+);
+
+IF NOT bInit AND fbPower.Status AND 0 = nErrorId THEN
+	nErrorId := fbValveObject.Connect();
+	bInit:= fbValveObject.IsConnected;
+END_IF
+
+
+CASE nState OF
+	0:
+	IF bStart AND fbValveObject.IsConnected THEN
+		fbValveObject.Disable();
+		nState:=nState+1;
+	END_IF
+	
+
+	1:
+	IF fbPower.Status THEN
+		fbMoveAbsFwd.Position:=250.0;
+		fbMoveAbsFwd.Velocity:=500.0;
+		fbMoveAbsFwd.Execute:=TRUE;
+		bStart:=FALSE;
+		nState:=nState+1;
+	END_IF
+
+	2:
+	IF NOT fbMoveAbsFwd.Busy THEN
+		fbMoveAbsFwd.Execute:=FALSE;		
+		IF fbMoveAbsFwd.Done THEN	
+			fbMoveAbsBwd.Position:=0.0;
+			fbMoveAbsBwd.Velocity:=500.0;
+			fbMoveAbsBwd.Execute:=TRUE;		
+			nState:=nState+1;
+		END_IF
+	END_IF
+	
+	3:
+	IF NOT fbMoveAbsBwd.Busy THEN
+		fbMoveAbsBwd.Execute:=FALSE;		
+		IF fbMoveAbsBwd.Done THEN	
+			timer.PT:=T#1S;
+			timer.IN:=TRUE;
+			nState:=nState+1;
+		END_IF
+	END_IF
+	
+	4:
+	IF timer.Q THEN
+		timer.IN:=FALSE;
+		fbCharacterization.Execute:=TRUE;
+		nState:=nState+1;
+	END_IF
+
+
+	5:
+	IF NOT fbCharacterization.Busy THEN
+		IF fbCharacterization.Done THEN
+			fbCharacterization.Execute:=FALSE;
+			fbValveObject.Enable();
+			timer.IN:=TRUE;
+			nState:=nState+1;
+		END_IF
+	END_IF
+
+	6:
+		nState:=nState+1;
+
+	7:
+	IF timer.Q THEN			
+		fbMoveAbsFwd.Position:=250.0;
+		fbMoveAbsFwd.Velocity:=500.0;
+		fbMoveAbsFwd.Execute:=TRUE;
+		timer.IN:=FALSE;
+			nState:=nState+1;
+	END_IF
+
+	8:
+	IF NOT fbMoveAbsFwd.Busy THEN
+		fbMoveAbsFwd.Execute:=FALSE;		
+		IF fbMoveAbsFwd.Done THEN	
+			fbMoveAbsBwd.Position:=0.0;
+			fbMoveAbsBwd.Velocity:=500.0;
+			fbMoveAbsBwd.Execute:=TRUE;		
+			nState:=nState+1;
+		END_IF
+	END_IF
+	
+	9:
+	IF NOT fbMoveAbsBwd.Busy THEN
+		fbMoveAbsBwd.Execute:=false;		
+		IF fbMoveAbsBwd.Done THEN	
+			nState:=0;
+		END_IF
+	END_IF
+END_CASE
+
+timer();
+
+stValveCharactOptions.MinimumTravelPerMeasurement:=0.2;
+stValveCharactOptions.WaitTimeAfterVelocityStep:=0.1;
+stValveCharactOptions.WaitTimeAtPositionLimit:=0.2;
+stValveCharactOptions.OutputLimit:=1.0;
+fbCharacterization
+(
+	Axis:=HydAxis,
+	OutputStepsize:=2.0/TO_LREAL(numberOfValveCharacteristicCurvePoints - 1),
+	PositionLimitMinimum:=50.0,
+	PositionLimitMaximum:=450.0,
+	Options:=stValveCharactOptions
+);
+
+
+IF bReadValveCharacteristicCurve THEN
+	NoOfPoints:=numberOfValveCharacteristicCurvePoints;
+	fbValveObject.ReadData(DestinationAddress:=ADR(ValvePoint), NumberOfPoints:=NoOfPoints);
+	
+	i:=i+1;
+	IF i > NoOfPoints THEN
+		i:=1;
+	END_IF
+	x_value := ValvePoint[i].SpoolPosition;
+	y_value := ValvePoint[i].Velocity;
+END_IF
+
+
+
+
+IF bEnableValveCharacteristicCurve THEN
+	nErrorId := fbValveObject.Enable();
+	bEnableValveCharacteristicCurve:=FALSE;
+END_IF
+
+IF bDisableValveCharacteristicCurve THEN
+	nErrorId := fbValveObject.Disable();
+	bDisableValveCharacteristicCurve:=FALSE;
+END_IF
+
+
+fbMoveAbsFwd
+(
+	Axis:=HydAxis,
+);
+
+fbMoveAbsBwd
+(
+	Axis:=HydAxis,
+);
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.4">
+  <POU Name="Simu" Id="{bc1941f6-7ebc-436a-b9d8-839f2afffadf}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Simu
+VAR
+	ActPos AT%Q*:	DINT;
+	SetVelo AT%I*:	INT;
+	PressureA AT%Q*:	INT;
+ 
+ 	fSetVelo:	LREAL;
+ 	fActPos:	LREAL;
+
+	fSetVeloNonLinear: LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fSetVelo:=INT_TO_LREAL(SetVelo)/32767*500.0;
+
+IF fSetVelo > 0.0 THEN
+	fSetVeloNonLinear := (1-COS(fSetVelo/500.0*3.14))/2.0*500.0;
+ELSE
+	fSetVeloNonLinear := -(1-COS(fSetVelo/500.0*3.14))/2.0*500.0;
+END_IF
+//fSetVeloNonLinear:=fSetVelo;
+fActPos:=fActPos+fSetVeloNonLinear*0.002;
+
+fActPos:=MIN(MAX(fActPos,0.0),500.0);
+ActPos:=LREAL_TO_DINT(fActPos * 1000.0);
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
