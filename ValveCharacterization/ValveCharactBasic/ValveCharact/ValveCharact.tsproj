@@ -5178,7 +5178,7 @@
 						</TmcDesc>
 						<UnrestoredVarLinks ImportTime="2025-05-22T15:44:54">
 							<OwnerA Name="Analog Outputs" Prefix="TINC^MC Project1^Axes^Axis^Analog Drive" Type="2">
-								<OwnerB Name="TIPC^Untitled1^Untitled1 Instance">
+								<OwnerB Name="TIPC^PLC_ValveCharact^PLC_ValveCharact Instance">
 									<Link VarA="Velocity Output" GrpA="Analog Outputs" TypeA="INT" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000006}" VarB="MC_Task_MET_ Inputs^Simu.SetVelo"/>
 								</OwnerB>
 							</OwnerA>
@@ -5534,9 +5534,9 @@
 			</MC>
 		</Motion>
 		<Plc>
-			<Project GUID="{66B80E1F-987F-4A04-B5DB-EA177D0F3AA2}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{8E1DD2AF-6B64-917B-1AC6-1FC0258033AE}" TmcPath="Untitled1\Untitled1.tmc">
-					<Name>Untitled1 Instance</Name>
+			<Project GUID="{66B80E1F-987F-4A04-B5DB-EA177D0F3AA2}" Name="PLC_ValveCharact" PrjFilePath="PLC_ValveCharact\PLC_ValveCharact.plcproj" TmcFilePath="PLC_ValveCharact\PLC_ValveCharact.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{F509C4E9-F504-ED79-925C-2E91D4B66D2C}" TmcPath="PLC_ValveCharact\PLC_ValveCharact.tmc">
+					<Name>PLC_ValveCharact Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" ContextId="1" AreaNo="17">
 						<Name>PlcTask Outputs</Name>
@@ -5611,7 +5611,7 @@
 		<MappingInfo Identifier="{00000000-2004-0850-0020-500810001005}" Id="#x02030010"/>
 		<MappingInfo Identifier="{02010030-2002-0850-1000-100501205008}" Id="#x02030030" Watchdog="14000000040000000400000004000000"/>
 		<MappingInfo Identifier="{02010030-2002-0850-C000-010101205008}" Id="#x02030020" Watchdog="14000000040000000400000004000000"/>
-		<OwnerA Name="TIPC^Untitled1^Untitled1 Instance">
+		<OwnerA Name="TIPC^PLC_ValveCharact^PLC_ValveCharact Instance">
 			<OwnerB Name="TINC^MC Project1^Axes^Axis">
 				<Link VarA="MC_Task_MET_ Inputs^Simu.SetVelo" VarB="Analog Outputs^Output"/>
 				<Link VarA="MC_Task_MET_ Outputs^Simu.ActPos" VarB="SSI Inputs^Counter Value"/>

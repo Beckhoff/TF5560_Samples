@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.4">
   <POU Name="Simu" Id="{bc1941f6-7ebc-436a-b9d8-839f2afffadf}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM Simu
+    <Declaration><![CDATA[// Simulation program for the Valve Characterization sample.
+// Models a non-linear hydraulic valve: integrates the (non-linear) spool velocity to an actual
+// position and feeds simulated I/O, so the sample runs without real hardware.
+PROGRAM Simu
 VAR
 	ActPos AT%Q*:	DINT;
 	SetVelo AT%I*:	INT;

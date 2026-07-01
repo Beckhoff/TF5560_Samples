@@ -1,13 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.19">
   <POU Name="MAIN" Id="{5c2425d5-896a-4883-ab01-c28da3e028c6}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM MAIN
+    <Declaration><![CDATA[// Valve Characterization sample
+// Shows automated valve characterization (spool position -> axis velocity) using
+// MC_ValveCharacterization and MC_ValveCharacteristicCurve; the separate Simu program models a
+// non-linear valve so the sample runs without hardware.
+// Operation: set bStart := TRUE to power, traverse and characterize; then use bEnable/bDisable/bReadValveCharacteristicCurve.
+PROGRAM MAIN
 VAR
 	bStart: 							BOOL;
 	bEnableValveCharacteristicCurve: 	BOOL;
 	bDisableValveCharacteristicCurve: 	BOOL;
 	bReadValveCharacteristicCurve:		BOOL;
-	numberOfValveCharacteristicCurvePoints:	UDINT:=21;
+	nNumberOfValveCharacteristicCurvePoints:	UDINT:=21;
 
 	nErrorId:		UDINT;
 
@@ -20,24 +25,24 @@ VAR
 	
 	fbMoveAbsFwd:		MC_MoveAbsolute;
 	fbMoveAbsBwd:		MC_MoveAbsolute;
-	timer:				TON;	
+	fbTimer:				TON;	
 	
-	NoOfPoints:		UDINT;
+	nNoOfPoints:		UDINT;
 	i:				INT;
-	ValvePoint:		ARRAY[1..cnNumberOfValveCharacteristicCurvePoints] OF ValveCharacteristicPoint;
+	aValvePoint:		ARRAY[1..cnNumberOfValveCharacteristicCurvePoints] OF ValveCharacteristicPoint;
 	
 	bInit: 			BOOL;
 	nState: 		INT;
 	
-	x_value:		LREAL;
-	y_value:		LREAL;
+	fXValue:		LREAL;
+	fYValue:		LREAL;
 END_VAR
 VAR CONSTANT
 	cnNumberOfValveCharacteristicCurvePoints:		UDINT:=100;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[numberOfValveCharacteristicCurvePoints := MIN(cnNumberOfValveCharacteristicCurvePoints, numberOfValveCharacteristicCurvePoints);
+      <ST><![CDATA[nNumberOfValveCharacteristicCurvePoints := MIN(cnNumberOfValveCharacteristicCurvePoints, nNumberOfValveCharacteristicCurvePoints);
 
 IF bStart THEN
 	fbPower.Enable:=TRUE;
@@ -87,15 +92,15 @@ CASE nState OF
 	IF NOT fbMoveAbsBwd.Busy THEN
 		fbMoveAbsBwd.Execute:=FALSE;		
 		IF fbMoveAbsBwd.Done THEN	
-			timer.PT:=T#1S;
-			timer.IN:=TRUE;
+			fbTimer.PT:=T#1S;
+			fbTimer.IN:=TRUE;
 			nState:=nState+1;
 		END_IF
 	END_IF
 	
 	4:
-	IF timer.Q THEN
-		timer.IN:=FALSE;
+	IF fbTimer.Q THEN
+		fbTimer.IN:=FALSE;
 		fbCharacterization.Execute:=TRUE;
 		nState:=nState+1;
 	END_IF
@@ -106,7 +111,7 @@ CASE nState OF
 		IF fbCharacterization.Done THEN
 			fbCharacterization.Execute:=FALSE;
 			fbValveObject.Enable();
-			timer.IN:=TRUE;
+			fbTimer.IN:=TRUE;
 			nState:=nState+1;
 		END_IF
 	END_IF
@@ -115,11 +120,11 @@ CASE nState OF
 		nState:=nState+1;
 
 	7:
-	IF timer.Q THEN			
+	IF fbTimer.Q THEN			
 		fbMoveAbsFwd.Position:=250.0;
 		fbMoveAbsFwd.Velocity:=500.0;
 		fbMoveAbsFwd.Execute:=TRUE;
-		timer.IN:=FALSE;
+		fbTimer.IN:=FALSE;
 			nState:=nState+1;
 	END_IF
 
@@ -143,7 +148,7 @@ CASE nState OF
 	END_IF
 END_CASE
 
-timer();
+fbTimer();
 
 stValveCharactOptions.MinimumTravelPerMeasurement:=0.2;
 stValveCharactOptions.WaitTimeAfterVelocityStep:=0.1;
@@ -152,7 +157,7 @@ stValveCharactOptions.OutputLimit:=1.0;
 fbCharacterization
 (
 	Axis:=HydAxis,
-	OutputStepsize:=2.0/TO_LREAL(numberOfValveCharacteristicCurvePoints - 1),
+	OutputStepsize:=2.0/TO_LREAL(nNumberOfValveCharacteristicCurvePoints - 1),
 	PositionLimitMinimum:=50.0,
 	PositionLimitMaximum:=450.0,
 	Options:=stValveCharactOptions
@@ -160,15 +165,15 @@ fbCharacterization
 
 
 IF bReadValveCharacteristicCurve THEN
-	NoOfPoints:=numberOfValveCharacteristicCurvePoints;
-	fbValveObject.ReadData(DestinationAddress:=ADR(ValvePoint), NumberOfPoints:=NoOfPoints);
+	nNoOfPoints:=nNumberOfValveCharacteristicCurvePoints;
+	fbValveObject.ReadData(DestinationAddress:=ADR(aValvePoint), NumberOfPoints:=nNoOfPoints);
 	
 	i:=i+1;
-	IF i > NoOfPoints THEN
+	IF i > nNoOfPoints THEN
 		i:=1;
 	END_IF
-	x_value := ValvePoint[i].SpoolPosition;
-	y_value := ValvePoint[i].Velocity;
+	fXValue := aValvePoint[i].SpoolPosition;
+	fYValue := aValvePoint[i].Velocity;
 END_IF
 
 

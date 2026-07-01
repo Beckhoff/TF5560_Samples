@@ -1,7 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.19">
   <POU Name="MAIN" Id="{f3e01bea-890b-4845-9c29-b7bdf06da229}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM MAIN
+    <Declaration><![CDATA[// Valve Characteristic Curve - Read/Write CSV sample
+// Shows persisting valve characteristic curve data (SpoolPosition/Velocity points) to and from
+// CSV files with MC_ValveCharacteristicCurve_WriteToCsv / _ReadFromCsv.
+// Operation: set bStartWrite := TRUE to write, bStartRead := TRUE to read; bUseComma selects the CSV field separator.
+PROGRAM MAIN
 VAR  
 	/// the filepath '/temp/ValveCharacteristicCurve.csv' requests the folder 'temp' in C:\
   
@@ -14,7 +18,7 @@ VAR
     
     fbRead  : MC_ValveCharacteristicCurve_ReadFromCsv;
     fbWrite : MC_ValveCharacteristicCurve_WriteToCsv;
-    WriteData : ARRAY[1..5] OF ValveCharacteristicPoint := [(Velocity:=-1.0, SpoolPosition:=-1.0), (Velocity:=-0.8, SpoolPosition:=-0.5), (Velocity:=0.0, SpoolPosition:=0.0), (Velocity:=0.4, SpoolPosition:=0.5), (Velocity:=0.8, SpoolPosition:=1.0)];
+    aWriteData : ARRAY[1..5] OF ValveCharacteristicPoint := [(Velocity:=-1.0, SpoolPosition:=-1.0), (Velocity:=-0.8, SpoolPosition:=-0.5), (Velocity:=0.0, SpoolPosition:=0.0), (Velocity:=0.4, SpoolPosition:=0.5), (Velocity:=0.8, SpoolPosition:=1.0)];
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[(* Set CSV field separator to ';' (16#3B) for comma decimals, or ',' (16#2C) otherwise *)
@@ -36,7 +40,7 @@ IF bStartRead THEN
     fbRead.FilePath:='/temp/ValveCharacteristicCurve.csv';
 END_IF
 
-fbWrite(DataPoints:=WriteData);
+fbWrite(DataPoints:=aWriteData);
 fbRead();]]></ST>
     </Implementation>
   </POU>
