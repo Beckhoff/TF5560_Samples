@@ -16,7 +16,7 @@ Make sure to install the following packages for engineering system:
 Make sure to install the following packages for runtime system:
 - TwinCAT.Standard.XAR (Windows)
 - TF3300.ScopeServer.XAR (Windows)
-- tc31-xar-um (Beckhoff RT Linux:tm: Runtime)
+- tc31-xar-um (Beckhoff RT Linux&reg; Runtime)
 
 ## Samples
 | Sample | What it shows |
