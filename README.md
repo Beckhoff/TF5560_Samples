@@ -12,6 +12,7 @@ Make sure to install the following packages for engineering system:
 - TwinCAT.Standard.XAE
 - TE1300.ScopeViewProfessional.XAE
 - **TF5560.MC3.FluidPower.XAE** (no runtime installation required - automatic deployment of runtime components to the target system during activation of configuration)
+- Some samples use 'Preview Libraries' from Preview feed. Add this feed to your TcPkg sources (URL: https://public.tcpkg.beckhoff-cloud.com/api/v1/feeds/Preview/) and install packages TwinCAT.XAE.PLC.Lib.Motion.MC3.Tc3_Mc3FluidPower_Preview. 
 
 Make sure to install the following packages for runtime system:
 - TwinCAT.Standard.XAR (Windows)
