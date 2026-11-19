@@ -6,7 +6,7 @@ TwinCAT 3 MC3 FluidPower extends [TF5500 | TwinCAT 3 MC3 Base](https://www.beckh
 ## Requirements and installation
 TwinCAT 3 MC3 requires **TwinCAT 3.1 Build >= 4026.23.1** and **TE1300.ScopeViewProfessional.XAE** is recommended.
 
-> These samples were created with **TwinCAT 3 MC3 version 4.0.6**.
+> These samples were created with **TwinCAT 3 MC3 version 4.0.24**.
 
 Make sure to install the following packages for engineering system:
 - TwinCAT.Standard.XAE

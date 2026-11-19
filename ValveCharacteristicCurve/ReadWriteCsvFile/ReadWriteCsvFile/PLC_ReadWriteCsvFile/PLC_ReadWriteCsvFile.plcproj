@@ -9,7 +9,7 @@
     <WriteProductVersion>true</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>PLC_ReadWriteCsvFile</Name>
-    <ProgramVersion>3.1.4026.25</ProgramVersion>
+    <ProgramVersion>3.1.4026.30</ProgramVersion>
     <Application>{7ef16436-442a-4e86-bbe5-bc2e5ded679c}</Application>
     <TypeSystem>{b3efedd0-76ae-4ed5-a3ff-a22e8417470e}</TypeSystem>
     <Implicit_Task_Info>{35e587cc-e2a4-481e-9bdd-6863580b4258}</Implicit_Task_Info>
@@ -64,10 +64,10 @@
   </ItemGroup>
   <ItemGroup>
     <PlaceholderResolution Include="Tc3_Mc3FluidPower">
-      <Resolution>Tc3_Mc3FluidPower, 4.0.6.0 (Beckhoff Automation GmbH)</Resolution>
+      <Resolution>Tc3_Mc3FluidPower, 4.0.24.0 (Beckhoff Automation GmbH)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="Tc3_Mc3FluidPower_Preview">
-      <Resolution>Tc3_Mc3FluidPower_Preview, 4.0.6.0 (Beckhoff Automation GmbH)</Resolution>
+      <Resolution>Tc3_Mc3FluidPower_Preview, 4.0.24.0 (Beckhoff Automation GmbH)</Resolution>
     </PlaceholderResolution>
   </ItemGroup>
   <ProjectExtensions>
